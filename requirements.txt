@@ -1,0 +1,12 @@
+# Web karkasas ir duomenu baze
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+alembic==1.13.1
+
+# Aplinkos kintamuju valdymas
+python-dotenv==1.0.1
+
+# Masininiam mokymuisi (Deep Learning)
+torch==2.3.0
+torchvision==0.18.0
+keras>=3.0.0
