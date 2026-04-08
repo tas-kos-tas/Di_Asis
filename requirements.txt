@@ -1,10 +1,16 @@
 # Web karkasas ir duomenu baze
 Flask==3.0.3
 Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.7
 alembic==1.13.1
 
 # Aplinkos kintamuju valdymas
 python-dotenv==1.0.1
+
+# Duomenu apdorojimas ir klasikinis ML
+numpy>=1.26.0
+pandas>=2.2.0
+scikit-learn>=1.4.0
 
 # Masininiam mokymuisi (Deep Learning)
 torch==2.3.0
