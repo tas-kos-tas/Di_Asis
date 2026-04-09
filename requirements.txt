@@ -8,7 +8,7 @@ alembic==1.13.1
 python-dotenv==1.0.1
 
 # Duomenu apdorojimas ir klasikinis ML
-numpy>=1.26.0
+numpy==1.26.4
 pandas>=2.2.0
 scikit-learn>=1.4.0
 
