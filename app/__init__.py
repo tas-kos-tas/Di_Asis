@@ -20,8 +20,8 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db) # Prideta: sujungia Flask, SQLAlchemy ir Alembic
     
-    # Cia veliau registruosime 'blueprints' (routes.py logika)
-    with app.app_context():
-        pass
+    # Registruojame maršrutus (Tai yra tiltas tarp serverio ir routes.py)
+    from app.routes import main
+    app.register_blueprint(main)
 
     return app
