@@ -1,22 +1,46 @@
 Projekto struktūra:
 
-C:\FINAL\
-├── .git/                 # (Paslėptas) GitHub ryšys ir istorija
-├── .gitignore            # Katalogų ir failų ignoravimo taisyklės
-├── readme.md             # Projekto dokumentacija
-├── requirements.txt      # Bibliotekų sąrašas (torch, flask ir kt.)
-├── run.py                # Pagrindinis aplikacijos paleidimo failas
+FINAL/
+├── analytics_charts/           # Modelio vertinimo ir analitikos grafikai (tyrimo rezultatams)
+│   ├── 1_f1_scores.png         # F1 įverčių palyginimo grafikas skirtingiems algoritmams
+│   ├── 2_confusion_matrix.png  # Klasifikavimo klaidų matrica (Confusion Matrix)
+│   ├── 3_hyperparameter_optimization.png # Hiperparametrų optimizavimo rezultatų vizualizacija
+│   └── 4_data_distribution.png # Mokymo duomenų pasiskirstymo analizė
 │
-├── app/                  # Programinis kodas
-│   ├── __init__.py       # Paketo inicializacija
-│   ├── models.py         # Duomenų bazės modeliai (SQLAlchemy)
-│   └── routes.py         # Maršrutų ir užklausų logika
+├── app/                        # Pagrindinė internetinės aplikacijos (Flask) logika
+│   ├── static/                 # Statiniai failai (Vartotojo sąsajos išvaizda ir dinamika)
+│   │   ├── css/                # Stilių failai (pvz., style.css - išdėstymas, spalvos)
+│   │   ├── images/             # Paveikslėliai (pvz., header-bg.jpg - banerio fonas)
+│   │   └── js/                 # JavaScript kodas (pvz., main.js - šviesumo algoritmas, interaktyvumas)
+│   ├── templates/              # HTML šablonai
+│   │   └── index.html          # Pagrindinis ir vienintelis vartotojo sąsajos langas
+│   ├── __init__.py             # Flask aplikacijos inicializavimas ir konfigūracijų užkrovimas
+│   ├── models.py               # SQLALchemy duomenų bazės lentelių struktūros modeliai
+│   └── routes.py               # Sistemos „smegenys“: jungia vartotojo įvestį, AI modelį ir duomenų bazę
 │
-├── ml/                   # Mašininio mokymosi moduliai
-│   ├── train.py          # Modelio apmokymo procesas (CUDA palaikymas)
-│   └── predict.py        # Prognozavimo logika
+├── instance/                   # Izoliuotų, lokalių duomenų aplankas
+│   └── site.db                 # SQLite duomenų bazė (saugo sugeneruotas spalvų paletes)
 │
-├── instance/             # Konfigūracijos katalogas
-│   └── site.db           # SQLite duomenų bazė
+├── migrations/                 # Duomenų bazės versijų kontrolė (Alembic / Flask-Migrate)
+│   ├── alembic.ini             # Migracijų įrankio konfigūracijos failas
+│   └── versions/               # Konkretūs duomenų bazės schemos pakeitimų istorijos failai
 │
-└── venv/                 # Virtuali aplinka
+├── ml/                         # Mašininio mokymosi (Machine Learning) laboratorija
+│   ├── saved_models/           # Ištreniruoti ir darbui paruošti modeliai
+│   │   ├── best_nn_model.keras # Pagrindinis giliai mokytas neuroninis tinklas (Keras)
+│   │   ├── knn_model.pkl       # K-artimiausių kaimynų (KNN) modelis (palyginimui/eksperimentams)
+│   │   ├── rf_model.pkl        # Atsitiktinių miškų (Random Forest) modelis (palyginimui/eksperimentams)
+│   │   └── nn_tools.pkl        # Teksto ir klasių vertėjai (TF-IDF Vectorizer, LabelEncoder)
+│   ├── generate_analytics.py   # Skriptas, generuojantis mokslinius grafikus į analytics_charts aplanką
+│   ├── generate_data.py        # Skriptas sintetiniams dizaino/emocijų duomenims generuoti
+│   ├── predict.py              # Savarankiškas įrankis AI modelio testavimui be web serverio
+│   ├── train_nn_model.py       # Skriptas, skirtas treniruoti neuroninį tinklą
+│   ├── train_rf_model.py       # Skriptas, skirtas treniruoti atsitiktinių miškų modelį
+│   ├── train_simple_model.py   # Skriptas bazinių modelių (pvz., KNN) treniravimui
+│   └── training_data.csv       # Sugeneruotas duomenų rinkinys, iš kurio mokėsi visi modeliai
+│
+├── .env                        # Aplinkos kintamieji (slaptažodžiai, API raktai - saugumo praktika)
+├── .gitignore                  # Taisyklės Git sistemai (nurodo, kokių failų nekelti į GitHub)
+├── readme.md                   # Pagrindinė projekto dokumentacija (GitHub puslapiui)
+├── requirements.txt            # Visų projektui reikalingų Python bibliotekų sąrašas
+└── run.py                      # Pradinis (entry-point) failas, paleidžiantis visą Flask serverį
