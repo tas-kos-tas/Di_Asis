@@ -4,77 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Dizaino Asistentas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% if result %}
+    <link href="https://fonts.googleapis.com/css2?family={{ result.header_font|replace(' ', '+') }}&family={{ result.body_font|replace(' ', '+') }}&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 40px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1 { text-align: center; color: #2c3e50; }
-        p.subtitle { text-align: center; color: #7f8c8d; margin-bottom: 30px; }
-        
-        /* Formos stiliai */
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; }
-        input[type="text"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
-        button:hover { background-color: #2980b9; }
-
-        /* Rezultatų stiliai */
-        .result-box { margin-top: 40px; padding: 25px; border: 2px dashed #3498db; border-radius: 8px; background-color: #f0f8ff; }
-        .font-preview { font-size: 24px; margin-bottom: 10px; }
-        .color-palette { display: flex; gap: 10px; margin-top: 20px; }
-        .color-box { width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        :root {
+            --header-font: '{{ result.header_font }}', sans-serif;
+            --body-font: '{{ result.body_font }}', serif;
+        }
     </style>
+    {% endif %}
 </head>
 <body>
 
-<div class="container">
-    <h1>🎨 AI Dizaino Asistentas</h1>
-    <p class="subtitle">Įveskite raktinius žodžius ir leiskite Neuroniniam Tinklui parinkti jums dizaino stilių.</p>
-
-    <form method="POST" action="/">
-        <div class="form-group">
-            <label for="keywords">Nuotaika / Raktažodžiai (pvz.: luxury, eco, trust, fun)</label>
-            <input type="text" id="keywords" name="keywords" placeholder="Įveskite emociją..." required>
-        </div>
-
-        <div class="form-group">
-            <label for="industry">Industrija</label>
-            <select id="industry" name="industry">
-                <option value="technology">Technologijos</option>
-                <option value="finance">Finansai</option>
-                <option value="healthcare">Sveikatos apsauga</option>
-                <option value="fashion">Mada ir grožis</option>
-                <option value="education">Edukacija</option>
-                <option value="entertainment">Pramogos / Sportas</option>
-                <option value="vegan">Ekologija / Vegan</option>
-            </select>
-        </div>
-
-        <button type="submit">✨ Generuoti Dizainą</button>
-    </form>
-
-    {% if result %}
-    <div class="result-box">
-        <h3>Gautas AI pasiūlymas:</h3>
-        <p>Jūsų užklausa: <strong>{{ result.keywords }} ({{ result.industry }})</strong></p>
-        
-        <div class="font-preview">
-            Antraščių šriftas: <strong>{{ result.header_font }}</strong>
-        </div>
-        <div class="font-preview" style="font-size: 18px; color: #555;">
-            Teksto šriftas: <strong>{{ result.body_font }}</strong>
-        </div>
-
-        <h4>Generuota spalvų paletė:</h4>
-        <div class="color-palette">
-            {% for color in result.colors %}
-                <div class="color-box" style="background-color: {{ color }};" title="{{ color }}"></div>
-            {% endfor %}
-        </div>
+<header class="hero">
+    <div class="hero-overlay" id="heroOverlay"></div>
+    <div class="hero-content">
+        <h1>AI Dizaino Asistentas</h1>
+        <p>Jūsų prekės ženklo vizualinis identitetas, sukurtas dirbtinio intelekto.</p>
     </div>
+</header>
+
+<main class="main-layout">
+    <section class="left-panel">
+        <p class="intro-text">
+            „AI Dizaino Asistentas“ – intelektuali platforma, akimirksniu paverčianti jūsų idėjas
+            vientisu vizualiniu identitetu. Analizuodama veiklos sritį ir raktinius žodžius, sistema
+            automatiškai sukuria profesionalią šriftų bei spalvų dermę, atitinkančią jūsų verslo charakterį.
+        </p>
+
+        <form method="POST" action="/">
+            <div class="form-group">
+                <label>Pasirinkite savo veiklos sritį:</label>
+                <select name="industry" id="industrySelect" onchange="updateIndustryDescription()">
+                    <option value="technology" {% if selected_industry == 'technology' %}selected{% endif %}>Technologijos ir IT</option>
+                    <option value="finance" {% if selected_industry == 'finance' %}selected{% endif %}>Finansai ir teisė</option>
+                    <option value="healthcare" {% if selected_industry == 'healthcare' %}selected{% endif %}>Sveikata ir medicina</option>
+                    <option value="fashion" {% if selected_industry == 'fashion' %}selected{% endif %}>Mada, grožis ir stilius</option>
+                    <option value="education" {% if selected_industry == 'education' %}selected{% endif %}>Švietimas ir mokslas</option>
+                    <option value="entertainment" {% if selected_industry == 'entertainment' %}selected{% endif %}>Pramogos, sportas ir kultūra</option>
+                    <option value="food" {% if selected_industry == 'food' %}selected{% endif %}>Maistas, gėrimai ir svetingumas</option>
+                    <option value="real_estate" {% if selected_industry == 'real_estate' %}selected{% endif %}>Nekilnojamasis turtas ir statyba</option>
+                    <option value="logistics" {% if selected_industry == 'logistics' %}selected{% endif %}>Prekyba ir logistika</option>
+                    <option value="manufacturing" {% if selected_industry == 'manufacturing' %}selected{% endif %}>Gamyba ir pramonė</option>
+                    <option value="ecology" {% if selected_industry == 'ecology' %}selected{% endif %}>Ekologija ir energetika</option>
+                    <option value="services" {% if selected_industry == 'services' %}selected{% endif %}>Profesionalios paslaugos</option>
+                    <option value="ngo" {% if selected_industry == 'ngo' %}selected{% endif %}>Viešasis sektorius ir NVO</option>
+                    <option value="other" {% if selected_industry == 'other' %}selected{% endif %}>Kita sritis</option>
+                </select>
+                <div id="industryDesc" class="desc-text"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Jūsų idėja ar emocija:</label>
+                <input type="text" name="keywords" value="{{ keywords or '' }}" placeholder="pvz. minimalizmas, prabanga, gamta..." required>
+            </div>
+            
+            <button type="submit" class="btn-generate" id="submitBtn">Generuoti vizualinį identitetą</button>
+        </form>
+    </section>
+
+    <section class="right-panel">
+        {% set colors = result.colors if result else ['#17252A', '#2B7A78', '#3AAFA9', '#DEF2F1', '#FEFFFF'] %}
+        {% for color in colors %}
+        <div class="color-box" style="background-color: {{ color }};">{{ color|upper }}</div>
+        {% endfor %}
+    </section>
+</main>
+
+<section class="font-demo-section">
+    {% if result %}
+    <h2 class="demo-header" style="font-family: '{{ result.header_font }}', sans-serif;">{{ result.header_font }} Antraštė</h2>
+    <p class="demo-body" style="font-family: '{{ result.body_font }}', serif;">
+        Tai yra vizualinis pavyzdys, kaip AI parinktas tekstas atrodo naudojant {{ result.body_font }} šriftą.<br>
+        Geras šrifto parinkimas padeda perduoti tinkamą prekės ženklo žinutę.
+    </p>
+    {% else %}
+    <h2 class="demo-header">Pasirinkite stilių</h2>
+    <p class="demo-body">Įveskite raktažodžius aukščiau esančioje formoje.</p>
     {% endif %}
+</section>
 
-</div>
-
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

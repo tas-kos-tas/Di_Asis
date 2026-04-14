@@ -1,0 +1,123 @@
+:root {
+    --primary-tint: #17252A; 
+    --accent-color: #2B7A78; /* Antra tamsiausia spalva mygtukui */
+    --demo-bg: #3AAFA9;      /* Fonas apatiniam blokui */
+    --demo-text: #FFFFFF;    /* Tekstas apatiniam blokui */
+    --header-font: 'Inter', sans-serif;
+    --body-font: 'Inter', sans-serif;
+}
+
+body { 
+    font-family: var(--body-font); 
+    background-color: #ffffff; 
+    margin: 0; 
+    color: #1e293b;
+    transition: all 0.5s ease;
+}
+
+h1, h2, h3 { font-family: var(--header-font); }
+
+/* HERO BANERIS */
+.hero {
+    position: relative;
+    height: 350px;
+    background: url('../images/header-bg.jpg') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 0;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: var(--primary-tint);
+    opacity: 0.85; /* Tamsus fonas, kad išryškėtų tekstas */
+    transition: background-color 0.8s ease;
+}
+
+.hero-content { 
+    position: relative; 
+    z-index: 1; 
+    max-width: 800px; 
+    padding: 0 20px;
+}
+
+.hero h1 { font-size: 3.5rem; margin: 0 0 10px 0; }
+.hero p { font-size: 1.2rem; margin: 0; opacity: 0.9; font-family: var(--body-font); } /* Sub-tekstas dinaminis */
+
+/* PAGRINDINIS IŠDĖSTYMAS */
+.main-layout {
+    max-width: 1200px;
+    margin: 20px auto 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Kairė pusė dvigubai platesnė už dešinę */
+    gap: 20px;
+    padding: 0 20px;
+}
+
+/* KAIRĖ PUSĖ (Forma) */
+.left-panel {
+    background-color: #eeeeee; /* Šviesiai žalsvas fonas kaip tavo makete */
+    padding: 40px;
+}
+
+.intro-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-top: 0;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.form-group { margin-bottom: 25px; }
+.form-group label { display: block; margin-bottom: 10px; font-weight: 700; font-size: 1rem; color: #111; }
+.desc-text { margin-top: 8px; font-size: 0.9rem; color: #555; }
+
+input[type="text"], select { 
+    width: 100%; padding: 12px; border: 1px solid #777; 
+    font-size: 1rem; box-sizing: border-box; background: #fff;
+}
+
+.btn-generate { 
+    width: 250px; padding: 15px; 
+    background-color: var(--accent-color); 
+    color: white; border: none; font-size: 1rem;
+    font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+.btn-generate:hover { filter: brightness(1.1); }
+
+/* DEŠINĖ PUSĖ (Stačiakampiai) */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.color-box {
+    flex: 1; /* Dalinasi aukštį po lygiai */
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+}
+
+/* APAČIA (Šriftų demonstracija) */
+.font-demo-section {
+    background-color: var(--demo-bg);
+    color: var(--demo-text);
+    padding: 60px 20px;
+    text-align: center;
+    transition: all 0.5s ease;
+}
+.demo-header { font-size: 3.5rem; margin: 0 0 20px 0; }
+.demo-body { font-size: 1.2rem; line-height: 1.6; max-width: 800px; margin: 0 auto; }
+
+@media (max-width: 900px) {
+    .main-layout { grid-template-columns: 1fr; }
+}

@@ -2,6 +2,7 @@ import os
 import pickle
 import numpy as np
 import ast
+import random
 from flask import Blueprint, render_template, request
 
 # 1. Priverčiame Keras naudoti PyTorch variklį (backend) PRIEŠ importuojant pačią biblioteką.
@@ -16,8 +17,7 @@ from app.models import DesignStyle
 main = Blueprint('main', __name__)
 
 # 3. Sukuriame globalius kintamuosius AI modeliams.
-# Kodėl globalius? Kad Neuroninis tinklas būtų užkraunamas tik VIENĄ kartą, kai serveris įsijungia.
-# Jei to nepadarytume, modelis būtų kraunamas iš naujo po kiekvieno vartotojo mygtuko paspaudimo (tai labai sulėtintų svetainę).
+# Kad Neuroninis tinklas būtų užkraunamas tik VIENĄ kartą, kai serveris įsijungia.
 nn_model = None
 vectorizer = None
 label_encoder = None
@@ -44,7 +44,6 @@ def load_ai_models():
         print(f"❌ Klaida užkraunant AI modelius: {e}")
 
 # 4. Apibrėžiame pagrindinį puslapį ('/').
-# methods=['GET', 'POST'] reiškia, kad puslapis gali ir RODYTI vaizdą (GET), ir PRIIMTI duomenis iš formos (POST).
 @main.route('/', methods=['GET', 'POST'])
 def index():
     """Pagrindinis puslapis ir AI prognozės logika."""
@@ -55,44 +54,52 @@ def index():
         
     prediction_result = None
     
+    # Sukuriame tuščius kintamuosius, kad puslapis žinotų, ką atvaizduoti pirmą kartą jį atidarius
+    user_keywords = ""
+    user_industry = ""
+    
     # Jei vartotojas paspaudė mygtuką "Generuoti" (Išsiuntė POST užklausą)
     if request.method == 'POST':
         # --- A. DUOMENŲ SURINKIMAS ---
-        # Paimame tai, ką vartotojas įvedė HTML formoje (žiūrime į 'name' atributus iš index.html)
         user_keywords = request.form.get('keywords', '')
         user_industry = request.form.get('industry', '')
         
         # --- B. DUOMENŲ PARUOŠIMAS MODELIUI ---
-        # Sujungiame žodžius į vieną eilutę (taip pat, kaip darėme treniruojant modelį)
         combined_text = f"{user_keywords} {user_industry}"
-        # Paverčiame tekstą į skaičių masyvą (TF-IDF matrica)
         X_input = vectorizer.transform([combined_text]).toarray()
         
         # --- C. AI PROGNOZĖ ---
-        # Paduodame skaičius Neuroniniam Tinklui ir gauname tikimybes
         predictions = nn_model.predict(X_input, verbose=0)
-        
-        # Randame indekso numerį, kuris turi didžiausią tikimybę (argmax)
         predicted_class_id = np.argmax(predictions[0]) 
-        
-        # Paverčiame skaičių (pvz., 3) atgal į šrifto pavadinimą (pvz., "Cinzel")
         predicted_font = label_encoder.inverse_transform([predicted_class_id])[0] 
         
         # --- D. DUOMENŲ BAZĖS UŽKLAUSA ---
-        # AI atspėjo šriftą. Dabar ieškome duomenų bazėje pirmo pasitaikiusio dizaino stiliaus,
-        # kuris naudoja šį atspėtą šriftą, kad galėtume ištraukti su juo suderintas spalvas.
-        style_db = DesignStyle.query.filter_by(header_font=predicted_font).first()
+        # Užuot ėmę pirmą pasitaikiusį (.first()), ištraukiame VISUS tinkančius (.all())
+        matching_styles = DesignStyle.query.filter_by(header_font=predicted_font).all()
+        
+        # Jei radome bent vieną, atsitiktinai pasirenkame vieną iš jų!
+        if matching_styles:
+            style_db = random.choice(matching_styles)
+        else:
+            style_db = None
         
         # --- E. REZULTATO FORMATAVIMAS HTML PUSLAPIUI ---
         if style_db:
-            try:
-                # Spalvos duomenų bazėje saugomos kaip tekstas: "['#FF0000', '#00FF00']"
-                # ast.literal_eval saugiai paverčia šį tekstą į tikrą Python sąrašą (list)
-                colors = ast.literal_eval(style_db.color_palette)
-            except:
-                colors = ["#000000", "#FFFFFF"] # Atsarginis variantas, jei įvyktų klaida
+            raw_colors = style_db.color_palette
+            
+            if isinstance(raw_colors, list):
+                colors = raw_colors
+            elif isinstance(raw_colors, str):
+                try:
+                    if '[' in raw_colors:
+                        colors = ast.literal_eval(raw_colors)
+                    else:
+                        colors = [c.strip() for c in raw_colors.split(',')]
+                except:
+                    colors = ["#2c3e50", "#e74c3c"]
+            else:
+                colors = ["#2c3e50", "#e74c3c"]
                 
-            # Supakuojame viską į vieną žodyną (dictionary), kurį išsiųsime į HTML
             prediction_result = {
                 'header_font': predicted_font,
                 'body_font': style_db.body_font,
@@ -101,5 +108,8 @@ def index():
                 'keywords': user_keywords
             }
             
-    # Atvaizduojame index.html šabloną ir paduodame jam mūsų rezultatą (jei jis yra)
-    return render_template('index.html', result=prediction_result)
+    # Atvaizduojame index.html šabloną ir perduodame jam REZULTATĄ bei IŠSAUGOTUS DUOMENIS (State Persistence)
+    return render_template('index.html', 
+                           result=prediction_result, 
+                           keywords=user_keywords, 
+                           selected_industry=user_industry)
