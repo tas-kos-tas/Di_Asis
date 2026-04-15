@@ -44,7 +44,8 @@ FINAL/
 │   ├── generate_analytics.py   # Skriptas, generuojantis mokslinius grafikus į analytics_charts aplanką
 │   ├── generate_data.py        # Skriptas sintetiniams dizaino/emocijų duomenims generuoti
 │   ├── predict.py              # Savarankiškas įrankis AI modelio testavimui be web serverio
-│   ├── train_nn_model.py       # Skriptas, skirtas treniruoti neuroninį tinklą
+│   ├── train.py                # Valdantysis skriptas, automatizuojantis modelių mokymo procesus
+│   ├── train_nn_model.py       # Skriptas, skirtas treniruoti ir optimizuoti neuroninį tinklą
 │   ├── train_rf_model.py       # Skriptas, skirtas treniruoti atsitiktinių miškų modelį
 │   ├── train_simple_model.py   # Skriptas bazinių modelių (pvz., KNN) treniravimui
 │   └── training_data.csv       # Sugeneruotas duomenų rinkinys, iš kurio mokėsi visi modeliai
@@ -53,7 +54,7 @@ FINAL/
 ├── .gitignore                  # Taisyklės Git sistemai (nurodo, kokių failų nekelti į GitHub)
 ├── readme.md                   # Pagrindinė projekto dokumentacija (GitHub puslapiui)
 ├── requirements.txt            # Visų projektui reikalingų Python bibliotekų sąrašas
-└── run.py                      # Pradinis (entry-point) failas, paleidžiantis visą Flask serverį
+└── run.py                      # Aplikacijos paleidimo failas (įjungia Flask serverį)
 
 ## Kaip veikia AI modelis?
 1. Vartotojas įveda raktažodžius (pvz., "minimalizmas, ramybė").

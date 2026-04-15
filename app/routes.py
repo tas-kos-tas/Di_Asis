@@ -113,3 +113,32 @@ def index():
                            result=prediction_result, 
                            keywords=user_keywords, 
                            selected_industry=user_industry)
+
+from app.models import TrainingLog
+import ast
+
+@main.route('/logs')
+def view_logs():
+    # Ištraukiame visus testų rezultatus iš DB, surikiuotus pagal geriausią tikslumą
+    logs = TrainingLog.query.order_by(TrainingLog.accuracy.desc()).all()
+    
+    # Kadangi hiperparametrai DB greičiausiai išsaugoti kaip tekstas (JSON/Dict), paverčiame juos atgal
+    parsed_logs = []
+    for log in logs:
+        try:
+            hp = ast.literal_eval(log.hyperparameters) if isinstance(log.hyperparameters, str) else log.hyperparameters
+        except:
+            hp = {}
+            
+        parsed_logs.append({
+            'id': log.id,
+            'model_type': log.model_type,
+            # Saugus apvalinimas: patikriname, ar accuracy ir loss nėra tušti
+            'accuracy': round(log.accuracy * 100, 2) if log.accuracy is not None else '-',
+            'loss': round(log.loss, 4) if log.loss is not None else '-',
+            'units': hp.get('hidden_units', '-'),
+            'lr': hp.get('learning_rate', '-'),
+            'batch': hp.get('batch_size', '-')
+        })
+        
+    return render_template('logs.html', logs=parsed_logs)

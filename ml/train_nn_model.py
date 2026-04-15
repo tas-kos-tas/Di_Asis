@@ -54,11 +54,11 @@ def train_neural_network():
             X_vectors, y_encoded, test_size=0.2, random_state=42
         )
 
-        print("3. Pradedamas hiperparametru testavimo ciklas (11 uzduotis)...")
+        print("3. Pradedamas hiperparametru testavimo ciklas...")
         # Apibreziame parametrus testavimui
-        hidden_units_options = [64, 128]
-        learning_rates = [0.01, 0.001]
-        batch_sizes = [16, 32]
+        hidden_units_options = [32, 64, 128]
+        learning_rates = [0.01, 0.005, 0.001]
+        batch_sizes = [16, 32, 64]
         epochs = 10
         
         best_accuracy = 0
